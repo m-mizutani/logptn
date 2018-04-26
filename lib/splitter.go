@@ -1,7 +1,7 @@
 package logptn
 
 import (
-	"log"
+	// "log"
 	"strings"
 )
 
@@ -30,7 +30,7 @@ func (x *Splitter) Split(msg string) []*Chunk {
 			break
 		}
 
-		log.Print("index: ", idx)
+		// log.Print("index: ", idx)
 		fwd := idx + 1
 
 		s1 := msg[:idx]

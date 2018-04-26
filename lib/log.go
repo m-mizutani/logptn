@@ -6,12 +6,13 @@ type Chunk struct {
 
 type Log struct {
 	text  string
-	chunk []Chunk
+	Chunk []*Chunk
 }
 
-func NewLog(line string) *Log {
+func NewLog(line string, sp *Splitter) *Log {
 	log := Log{}
 	log.text = line
+	log.Chunk = sp.Split(line)
 	return &log
 }
 

@@ -6,8 +6,15 @@ import (
 )
 
 type Generator struct {
-	logs    []*Log
-	formats []*Format
+	logs     []*Log
+	formats  []*Format
+	splitter *Splitter
+}
+
+func NewGenerator() *Generator {
+	g := Generator{}
+	g.splitter = NewSplitter()
+	return &g
 }
 
 func (x *Generator) ReadFile(fpath string) error {
@@ -32,7 +39,7 @@ func (x *Generator) ReadIO(fp *os.File) error {
 }
 
 func (x *Generator) ReadLine(msg string) error {
-	log := NewLog(msg)
+	log := NewLog(msg, x.splitter)
 	x.logs = append(x.logs, log)
 	return nil
 }
