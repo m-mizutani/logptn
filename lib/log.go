@@ -1,7 +1,7 @@
 package logptn
 
 type Chunk struct {
-	chunk string
+	Data string
 }
 
 type Log struct {
@@ -13,4 +13,10 @@ func NewLog(line string) *Log {
 	log := Log{}
 	log.text = line
 	return &log
+}
+
+func NewChunk(d string) *Chunk {
+	c := Chunk{}
+	c.Data = d
+	return &c
 }
