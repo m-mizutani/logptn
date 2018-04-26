@@ -1,7 +1,7 @@
 package genlogfmt
 
 type Generator struct {
-	logs    []Log
+	logs    []*Log
 	formats []*Format
 }
 
@@ -17,6 +17,7 @@ func (x *Generator) End() {
 	clusters := Clustering(x.logs)
 	for _, cluster := range clusters {
 		format := GenFormat(&cluster)
+		x.formats = append(x.formats, format)
 	}
 }
 
