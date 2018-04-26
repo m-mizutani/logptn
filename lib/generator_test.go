@@ -24,3 +24,13 @@ func TestReadFileWithMultipleNL(t *testing.T) {
 
 	assert.Equal(t, 6, len(logs))
 }
+
+func TestFinalize(t *testing.T) {
+	g := logptn.NewGenerator()
+	err := g.ReadFile("../test_data/t001.log")
+	assert.Nil(t, err)
+	g.Finalize()
+
+	formats := g.Formats()
+	assert.True(t, len(formats) > 0)
+}
