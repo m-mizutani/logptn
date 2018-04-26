@@ -22,8 +22,10 @@ func main() {
 
 	gen := logptn.Generator{}
 
-	for _, arg := range args {
+	for _, arg := range args[1:] {
+		log.Print("arg:", arg)
 		var err error
+
 		if arg != "-" {
 			err = gen.ReadFile(arg)
 		} else {

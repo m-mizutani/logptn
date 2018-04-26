@@ -2,7 +2,6 @@ package logptn
 
 import (
 	"bufio"
-	"log"
 	"os"
 )
 
@@ -22,7 +21,6 @@ func (x *Generator) ReadFile(fpath string) error {
 }
 
 func (x *Generator) ReadIO(fp *os.File) error {
-	log.Print("ReadIO")
 	s := bufio.NewScanner(fp)
 	for s.Scan() {
 		text := s.Text()
