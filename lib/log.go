@@ -1,4 +1,4 @@
-package genlogfmt
+package logptn
 
 type Chunk struct {
 	chunk string

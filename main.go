@@ -2,7 +2,7 @@ package main
 
 import (
 	"github.com/jessevdk/go-flags"
-	genlogfmt "github.com/m-mizutani/genlogfmt/lib"
+	logptn "github.com/m-mizutani/logptn/lib"
 	"log"
 	"os"
 )
@@ -19,7 +19,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	gen := genlogfmt.Generator{}
+	gen := logptn.Generator{}
 
 	if opts.FileName != "" {
 		err := gen.ReadFile(opts.FileName)

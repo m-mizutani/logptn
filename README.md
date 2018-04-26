@@ -1,1 +1,3 @@
-# genlogfmt
+logptn: Text Log Pattern Analyzer
+====================
+

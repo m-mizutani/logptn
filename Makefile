@@ -1,7 +1,7 @@
-all: genlogfmt
+all: logptn
 
-genlogfmt: *.go lib/*.go
-	go build -o genlogfmt
+logptn: *.go lib/*.go
+	go build -o logptn
 
 test: *.go lib/*.go
 	go test . ./lib

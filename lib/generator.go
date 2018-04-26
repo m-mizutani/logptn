@@ -1,4 +1,4 @@
-package genlogfmt
+package logptn
 
 type Generator struct {
 	logs    []*Log
