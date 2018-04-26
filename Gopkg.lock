@@ -2,20 +2,32 @@
 
 
 [[projects]]
+  name = "github.com/davecgh/go-spew"
+  packages = ["spew"]
+  revision = "346938d642f2ec3594ed81d874461961cd0faa76"
+  version = "v1.1.0"
+
+[[projects]]
   name = "github.com/jessevdk/go-flags"
   packages = ["."]
   revision = "c6ca198ec95c841fdb89fc0de7496fed11ab854e"
   version = "v1.4.0"
 
 [[projects]]
-  branch = "master"
-  name = "github.com/m-mizutani/genlogfmt"
-  packages = ["lib"]
-  revision = "7d893f05150f75187ce1ea9d2e648e446ae2905b"
+  name = "github.com/pmezard/go-difflib"
+  packages = ["difflib"]
+  revision = "792786c7400a136282c1664665ae0a8db921c6c2"
+  version = "v1.0.0"
+
+[[projects]]
+  name = "github.com/stretchr/testify"
+  packages = ["assert"]
+  revision = "12b6f73e6084dad08a7c6e575284b177ecafbc71"
+  version = "v1.2.1"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "9b3058ab7e125b1c2a414ee5e86e2fb47435bac7b4d8bb361bd7f80207917add"
+  inputs-digest = "97d6b8892a6ef1b54f1d6f023edb507290b11cede4dd761ed10c0fe7928f9649"
   solver-name = "gps-cdcl"
   solver-version = 1

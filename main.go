@@ -8,21 +8,28 @@ import (
 )
 
 type Options struct {
-	FileName string `short:"r" description:"A log file" value-name:"FILE"`
+	MaxLen uint `long:"maxlen" description:"Max length of log message"`
+	// FileName string `short:"i" description:"A log file" value-name:"FILE"`
 }
 
 func main() {
 	var opts Options
 
-	_, ParseErr := flags.ParseArgs(&opts, os.Args)
+	args, ParseErr := flags.ParseArgs(&opts, os.Args)
 	if ParseErr != nil {
 		os.Exit(1)
 	}
 
 	gen := logptn.Generator{}
 
-	if opts.FileName != "" {
-		err := gen.ReadFile(opts.FileName)
+	for _, arg := range args {
+		var err error
+		if arg != "-" {
+			err = gen.ReadFile(arg)
+		} else {
+			err = gen.ReadIO(os.Stdin)
+		}
+
 		if err != nil {
 			log.Fatal(err)
 			os.Exit(1)
