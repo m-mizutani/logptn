@@ -47,7 +47,7 @@ func (x *Generator) ReadLine(msg string) error {
 func (x *Generator) Finalize() {
 	clusters := Clustering(x.logs)
 	for _, cluster := range clusters {
-		format := GenFormat(&cluster)
+		format := GenFormat(cluster)
 		x.formats = append(x.formats, format)
 	}
 }

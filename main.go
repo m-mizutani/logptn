@@ -20,7 +20,7 @@ func main() {
 		os.Exit(1)
 	}
 
-	gen := logptn.Generator{}
+	gen := logptn.NewGenerator()
 
 	for _, arg := range args[1:] {
 		log.Print("arg:", arg)
@@ -36,5 +36,7 @@ func main() {
 			log.Fatal(err)
 			os.Exit(1)
 		}
+
+		gen.Finalize()
 	}
 }
