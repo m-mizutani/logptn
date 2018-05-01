@@ -21,3 +21,8 @@ func NewChunk(d string) *Chunk {
 	c.Data = d
 	return &c
 }
+
+func (x *Chunk) Clone() *Chunk {
+	c := NewChunk(x.Data)
+	return c
+}

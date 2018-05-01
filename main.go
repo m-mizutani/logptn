@@ -38,5 +38,9 @@ func main() {
 		}
 
 		gen.Finalize()
+
+		for _, format := range gen.Formats() {
+			log.Println(format)
+		}
 	}
 }
