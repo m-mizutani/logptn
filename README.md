@@ -33,4 +33,5 @@ Usage:
 
 Application Options:
   -o, --output= Output file, '-' means stdout (default: -)
+  -f, --format=[text|json]
 ```
