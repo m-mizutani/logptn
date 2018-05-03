@@ -1,5 +1,9 @@
 package logptn
 
+import (
+// logging "log"
+)
+
 type Format struct {
 	Chunks []*Chunk
 }
@@ -17,7 +21,7 @@ func NewFormat(chunks []*Chunk) *Format {
 
 func (x *Format) Merge(chunks []*Chunk) {
 	for idx, c := range chunks {
-		if x.Chunks[idx].Data != c.Data {
+		if x.Chunks[idx] != nil && x.Chunks[idx].Data != c.Data {
 			x.Chunks[idx] = nil
 		}
 	}
