@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"github.com/jessevdk/go-flags"
 	logptn "github.com/m-mizutani/logptn/lib"
 	"log"
@@ -10,7 +9,8 @@ import (
 
 type Options struct {
 	// MaxLen uint   `long:"maxlen" description:"Max length of log message"`
-	Output string `short:"o" long:"output" description:"Output file, '-' means stdout" default:"-"`
+	Output    string `short:"o" long:"output" description:"Output file, '-' means stdout" default:"-"`
+	OutFormat string `short:"f" long:"format" choice:"text" default:"text"`
 	// FileName string `short:"i" description:"A log file" value-name:"FILE"`
 }
 
@@ -22,18 +22,12 @@ func main() {
 		os.Exit(1)
 	}
 
-	var out *os.File
-	if opts.Output == "-" {
-		out = os.Stdout
-	} else {
-		fd, err := os.OpenFile(opts.Output, os.O_RDWR|os.O_CREATE, 0755)
-		if err != nil {
-			log.Fatal("Can not open file: ", opts.Output)
-			os.Exit(1)
-		}
-		defer fd.Close()
-		out = fd
+	var writer logptn.Writer
+	switch opts.OutFormat {
+	case "text":
+		writer = &logptn.TextWriter{}
 	}
+	writer.Open(opts.Output)
 
 	gen := logptn.NewGenerator()
 
@@ -55,7 +49,5 @@ func main() {
 
 	gen.Finalize()
 
-	for _, format := range gen.Formats() {
-		fmt.Fprint(out, format.String())
-	}
+	writer.Dump(gen.Formats())
 }
