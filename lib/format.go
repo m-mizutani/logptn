@@ -5,7 +5,7 @@ import (
 )
 
 type Format struct {
-	Chunks []*Chunk
+	Chunks []*Chunk `json:"chunk"`
 }
 
 func NewFormat(chunks []*Chunk) *Format {

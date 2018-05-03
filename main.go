@@ -10,7 +10,7 @@ import (
 type Options struct {
 	// MaxLen uint   `long:"maxlen" description:"Max length of log message"`
 	Output    string `short:"o" long:"output" description:"Output file, '-' means stdout" default:"-"`
-	OutFormat string `short:"f" long:"format" choice:"text" default:"text"`
+	OutFormat string `short:"f" long:"format" choice:"text" choice:"json" default:"text"`
 	// FileName string `short:"i" description:"A log file" value-name:"FILE"`
 }
 
@@ -26,6 +26,8 @@ func main() {
 	switch opts.OutFormat {
 	case "text":
 		writer = &logptn.TextWriter{}
+	case "json":
+		writer = &logptn.JsonWriter{}
 	}
 	writer.Open(opts.Output)
 
