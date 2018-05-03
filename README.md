@@ -24,3 +24,13 @@ $ logptn /var/log/auth.log
 2018/05/03 15:09:54 Jul  9 *:*:* pylon sshd[*]: Failed password for invalid user * from * port * ssh2
 2018/05/03 15:09:54 Jul  9 *:*:* pylon CRON[*]: pam_unix(cron:session): session closed for user *
 ```
+
+## Options
+
+```
+Usage:
+  logptn [OPTIONS]
+
+Application Options:
+  -o, --output= Output file, '-' means stdout (default: -)
+```
