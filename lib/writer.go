@@ -11,11 +11,11 @@ type Writer interface {
 	Dump(formats []*Format) error
 }
 
-type TextWriter struct {
+type FileWriter struct {
 	out *os.File
 }
 
-func (x *TextWriter) Open(fpath string) error {
+func (x *FileWriter) Open(fpath string) error {
 	if fpath == "-" {
 		x.out = os.Stdout
 	} else {
@@ -29,6 +29,11 @@ func (x *TextWriter) Open(fpath string) error {
 
 	return nil
 }
+
+type TextWriter struct {
+	FileWriter
+}
+
 func (x *TextWriter) Dump(formats []*Format) error {
 	for _, format := range formats {
 		fmt.Fprint(x.out, format.String(), "\n")
