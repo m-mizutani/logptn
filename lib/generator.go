@@ -2,7 +2,10 @@ package logptn
 
 import (
 	"bufio"
+	"compress/gzip"
+	"io"
 	"os"
+	"strings"
 )
 
 type Generator struct {
@@ -24,10 +27,19 @@ func (x *Generator) ReadFile(fpath string) error {
 	}
 	defer fp.Close()
 
-	return x.ReadIO(fp)
+	if strings.HasSuffix(fpath, ".gz") {
+		zr, zerr := gzip.NewReader(fp)
+		if zerr != nil {
+			return zerr
+		}
+		defer zr.Close()
+		return x.ReadIO(zr)
+	} else {
+		return x.ReadIO(fp)
+	}
 }
 
-func (x *Generator) ReadIO(fp *os.File) error {
+func (x *Generator) ReadIO(fp io.Reader) error {
 	s := bufio.NewScanner(fp)
 	for s.Scan() {
 		text := s.Text()
