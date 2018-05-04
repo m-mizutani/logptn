@@ -37,10 +37,10 @@ func (x Format) String() string {
 }
 
 // GenFormat generates a format from Cluster (set of logs)
-func GenFormat(cluster *Cluster) *Format {
-	format := newFormat(cluster.Base.Chunk)
+func GenFormat(cluster Cluster) *Format {
+	format := newFormat(cluster.Logs()[0].Chunk)
 
-	for _, log := range cluster.logs {
+	for _, log := range cluster.Logs() {
 		format.merge(log.Chunk)
 	}
 

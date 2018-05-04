@@ -12,18 +12,25 @@ type Generator struct {
 	logs     []*Log
 	formats  []*Format
 	splitter Splitter
+	builder  ClusterBuilder
 }
 
 // Constructor of Generator
 func NewGenerator() *Generator {
 	g := Generator{}
 	g.splitter = NewSplitter()
+	g.builder = NewSimpleClusterBuilder()
 	return &g
 }
 
 // Replace splitter of Generator
 func (x *Generator) ReplaceSplitter(sp Splitter) {
 	x.splitter = sp
+}
+
+// Replace ClusterBuilder of Generator
+func (x *Generator) ReplaceClusterBuilder(builder ClusterBuilder) {
+	x.builder = builder
 }
 
 // Read lines from log file (not only raw text but also gzip)
@@ -67,7 +74,7 @@ func (x *Generator) ReadLine(msg string) error {
 
 // Finalize and build format(s).
 func (x *Generator) Finalize() {
-	clusters := Clustering(x.logs)
+	clusters := x.builder.Clustering(x.logs)
 	for _, cluster := range clusters {
 		format := GenFormat(cluster)
 		x.formats = append(x.formats, format)

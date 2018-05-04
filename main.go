@@ -24,6 +24,7 @@ func main() {
 		os.Exit(1)
 	}
 
+	// Setup Writer
 	var writer logptn.Writer
 	switch opts.OutFormat {
 	case "text":
@@ -39,10 +40,18 @@ func main() {
 
 	gen := logptn.NewGenerator()
 
+	// Setup Splitter
 	if opts.Delimiters != "" {
 		sp := logptn.NewSimpleSplitter()
 		sp.SetDelim(opts.Delimiters)
 		gen.ReplaceSplitter(sp)
+	}
+
+	// Setup ClusterBuilder
+	if opts.Threshold > 0 {
+		builder := logptn.NewSimpleClusterBuilder()
+		builder.SetThreshold(opts.Threshold)
+		gen.ReplaceClusterBuilder(builder)
 	}
 
 	for _, arg := range args[1:] {
