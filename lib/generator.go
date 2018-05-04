@@ -11,7 +11,7 @@ import (
 type Generator struct {
 	logs     []*Log
 	formats  []*Format
-	splitter *Splitter
+	splitter Splitter
 }
 
 func NewGenerator() *Generator {

@@ -32,7 +32,7 @@ func TestSplit3(t *testing.T) {
 }
 
 func TestSplitWithDelim(t *testing.T) {
-	s := logptn.NewSplitter()
+	s := logptn.NewSimpleSplitter()
 	s.SetDelim("XYZ")
 	c := s.Split(" abc [Xbdw]")
 	assert.Equal(t, 3, len(c))

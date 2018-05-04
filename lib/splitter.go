@@ -6,13 +6,23 @@ import (
 	"strings"
 )
 
-type Splitter struct {
+type Splitter interface {
+	Split(msg string) []*Chunk
+}
+
+type SimpleSplitter struct {
 	delims    string
 	regexList []*regexp.Regexp
 }
 
-func NewSplitter() *Splitter {
-	s := Splitter{}
+// NewSplitter is a wrapper of SimpleSplitter
+func NewSplitter() Splitter {
+	return NewSimpleSplitter()
+}
+
+// NewSimpleSplitter is a constructor of SimpleSplitter
+func NewSimpleSplitter() *SimpleSplitter {
+	s := &SimpleSplitter{}
 	s.delims = " \t!,:;[]{}()<>=|\\*\"'"
 	heuristicsPatterns := []string{
 		`\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d+`,                           // DateTime
@@ -30,14 +40,15 @@ func NewSplitter() *Splitter {
 	for idx, p := range heuristicsPatterns {
 		s.regexList[idx] = regexp.MustCompile(p)
 	}
-	return &s
+	return s
 }
 
-func (x *Splitter) SetDelim(d string) {
+// SetDelim is a function set charactors as delimiter
+func (x *SimpleSplitter) SetDelim(d string) {
 	x.delims = d
 }
 
-func (x *Splitter) splitByRegex(chunk *Chunk) []*Chunk {
+func (x *SimpleSplitter) splitByRegex(chunk *Chunk) []*Chunk {
 	for _, regex := range x.regexList {
 		result := regex.FindAllStringIndex(chunk.Data, -1)
 		if len(result) > 0 {
@@ -57,7 +68,7 @@ func (x *Splitter) splitByRegex(chunk *Chunk) []*Chunk {
 	return res
 }
 
-func (x *Splitter) splitByDelimiter(chunk *Chunk) []*Chunk {
+func (x *SimpleSplitter) splitByDelimiter(chunk *Chunk) []*Chunk {
 	var res []*Chunk
 	msg := chunk.Data
 	for {
@@ -93,7 +104,8 @@ func (x *Splitter) splitByDelimiter(chunk *Chunk) []*Chunk {
 	return res
 }
 
-func (x *Splitter) Split(msg string) []*Chunk {
+// Split is a function to split log message.
+func (x *SimpleSplitter) Split(msg string) []*Chunk {
 	chunk := NewChunk(msg)
 	prevLen := 0
 	chunks := []*Chunk{chunk}

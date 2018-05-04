@@ -10,7 +10,7 @@ type Log struct {
 	Chunk []*Chunk
 }
 
-func NewLog(line string, sp *Splitter) *Log {
+func NewLog(line string, sp Splitter) *Log {
 	log := Log{}
 	log.text = line
 	log.Chunk = sp.Split(line)
