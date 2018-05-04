@@ -4,24 +4,35 @@ import (
 // logging "log"
 )
 
+// Segment is a part of format
+type Segment struct {
+	Text   string         `json:"text"`
+	Values map[string]int `json:"values"`
+	Fixed  bool
+}
+
+func newSegment(text string) *Segment {
+	s := Segment{Text: text, Values: map[string]int{}, Fixed: true}
+	return &s
+}
+
 // Format is a structure of log format.
 type Format struct {
-	Chunks []*Chunk
-	values []map[string]int
-	Count  int
+	Segments []*Segment `json:"segments"`
+	Count    int
 }
 
 func (x Format) String() string {
-	var s string
-	for _, c := range x.Chunks {
-		if c != nil {
-			s += c.Data
+	var str string
+	for _, s := range x.Segments {
+		if s.Fixed {
+			str += s.Text
 		} else {
-			s += "*"
+			str += "*"
 		}
 	}
 
-	return s
+	return str
 }
 
 // GenFormat generates a format from Cluster (set of logs)
@@ -37,12 +48,10 @@ func GenFormat(cluster *Cluster) *Format {
 
 func newFormat(chunks []*Chunk) *Format {
 	f := Format{}
-	f.Chunks = make([]*Chunk, len(chunks))
-	f.values = make([]map[string]int, len(chunks))
+	f.Segments = make([]*Segment, len(chunks))
 
 	for idx, c := range chunks {
-		f.Chunks[idx] = c.Clone()
-		f.values[idx] = map[string]int{}
+		f.Segments[idx] = newSegment(c.Data)
 	}
 
 	return &f
@@ -51,10 +60,10 @@ func newFormat(chunks []*Chunk) *Format {
 func (x *Format) merge(chunks []*Chunk) {
 	x.Count++
 	for idx, c := range chunks {
-		if x.Chunks[idx] != nil && x.Chunks[idx].Data != c.Data {
-			x.Chunks[idx] = nil
+		if x.Segments[idx].Fixed && x.Segments[idx].Text != c.Data {
+			x.Segments[idx].Fixed = false
 		}
 
-		x.values[idx][c.Data]++
+		x.Segments[idx].Values[c.Data]++
 	}
 }

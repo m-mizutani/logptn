@@ -35,6 +35,7 @@ type TextWriter struct {
 	FileWriter
 }
 
+// Dump format data as plain text
 func (x *TextWriter) Dump(formats []*Format) error {
 	for _, format := range formats {
 		fmt.Fprint(x.out, format.String(), "\n")
@@ -46,39 +47,14 @@ type JsonWriter struct {
 	FileWriter
 }
 
-type JsonOutput struct {
-	Formats []*PrintableFormat `json:"formats"`
+type jsonOutputTemplate struct {
+	Formats []*Format `json:"formats"`
 }
 
-type PrintableFormat struct {
-	Literals []*string `json:"literals"`
-}
-
+// Dump format data as json structured data
 func (x *JsonWriter) Dump(formats []*Format) error {
-	d := JsonOutput{}
-	for _, format := range formats {
-		pf := &PrintableFormat{}
-		var s, p *string
-		for _, c := range format.Chunks {
-			if c != nil {
-				s = &c.Data
-			} else {
-				s = nil
-			}
-
-			if p != nil && s != nil {
-				t := *p + *s
-				pf.Literals[len(pf.Literals)-1] = &t
-				p = &t
-			} else {
-				pf.Literals = append(pf.Literals, s)
-				p = s
-			}
-		}
-
-		d.Formats = append(d.Formats, pf)
-	}
-
+	d := jsonOutputTemplate{}
+	d.Formats = formats
 	b, _ := json.Marshal(d)
 	fmt.Fprint(x.out, string(b))
 	return nil
