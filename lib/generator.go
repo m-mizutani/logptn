@@ -14,12 +14,19 @@ type Generator struct {
 	splitter Splitter
 }
 
+// Constructor of Generator
 func NewGenerator() *Generator {
 	g := Generator{}
 	g.splitter = NewSplitter()
 	return &g
 }
 
+// Replace splitter of Generator
+func (x *Generator) ReplaceSplitter(sp Splitter) {
+	x.splitter = sp
+}
+
+// Read lines from log file (not only raw text but also gzip)
 func (x *Generator) ReadFile(fpath string) error {
 	fp, err := os.Open(fpath)
 	if err != nil {
@@ -39,6 +46,7 @@ func (x *Generator) ReadFile(fpath string) error {
 	}
 }
 
+// Read lines from io.Reader
 func (x *Generator) ReadIO(fp io.Reader) error {
 	s := bufio.NewScanner(fp)
 	for s.Scan() {
@@ -50,12 +58,14 @@ func (x *Generator) ReadIO(fp io.Reader) error {
 	return nil
 }
 
+// Read a line from argument.
 func (x *Generator) ReadLine(msg string) error {
 	log := NewLog(msg, x.splitter)
 	x.logs = append(x.logs, log)
 	return nil
 }
 
+// Finalize and build format(s).
 func (x *Generator) Finalize() {
 	clusters := Clustering(x.logs)
 	for _, cluster := range clusters {
@@ -64,10 +74,12 @@ func (x *Generator) Finalize() {
 	}
 }
 
+// Getter of formats
 func (x *Generator) Formats() []*Format {
 	return x.formats
 }
 
+// Getter of logs
 func (x *Generator) Logs() []*Log {
 	return x.logs
 }

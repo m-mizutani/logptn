@@ -7,15 +7,17 @@ import (
 	"os"
 )
 
-type Options struct {
+type options struct {
 	// MaxLen uint   `long:"maxlen" description:"Max length of log message"`
-	Output    string `short:"o" long:"output" description:"Output file, '-' means stdout" default:"-"`
-	OutFormat string `short:"f" long:"format" choice:"text" choice:"json" default:"text"`
+	Output     string  `short:"o" long:"output" description:"Output file, '-' means stdout" default:"-"`
+	OutFormat  string  `short:"f" long:"format" choice:"text" choice:"json" default:"text"`
+	Threshold  float64 `short:"t" long:"threshold" default:"0.7"`
+	Delimiters string  `short:"d" long:"delimiters"`
 	// FileName string `short:"i" description:"A log file" value-name:"FILE"`
 }
 
 func main() {
-	var opts Options
+	var opts options
 
 	args, ParseErr := flags.ParseArgs(&opts, os.Args)
 	if ParseErr != nil {
@@ -29,9 +31,19 @@ func main() {
 	case "json":
 		writer = &logptn.JsonWriter{}
 	}
-	writer.Open(opts.Output)
+
+	if werr := writer.Open(opts.Output); werr != nil {
+		log.Fatal("File open error: ", werr)
+		os.Exit(1)
+	}
 
 	gen := logptn.NewGenerator()
+
+	if opts.Delimiters != "" {
+		sp := logptn.NewSimpleSplitter()
+		sp.SetDelim(opts.Delimiters)
+		gen.ReplaceSplitter(sp)
+	}
 
 	for _, arg := range args[1:] {
 		log.Print("arg:", arg)
