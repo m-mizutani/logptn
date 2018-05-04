@@ -1,7 +1,8 @@
 package logptn
 
 type Chunk struct {
-	Data string
+	Data   string
+	Freeze bool
 }
 
 type Log struct {
@@ -19,6 +20,7 @@ func NewLog(line string, sp *Splitter) *Log {
 func NewChunk(d string) *Chunk {
 	c := Chunk{}
 	c.Data = d
+	c.Freeze = false
 	return &c
 }
 
