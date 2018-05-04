@@ -26,6 +26,7 @@ func NewChunk(d string) *Chunk {
 
 func (x *Chunk) Clone() *Chunk {
 	c := NewChunk(x.Data)
+	c.Freeze = x.Freeze
 	return c
 }
 
