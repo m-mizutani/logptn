@@ -40,3 +40,24 @@ func TestSplitWithDelim(t *testing.T) {
 	assert.Equal(t, "X", c[1].Data)
 	assert.Equal(t, "bdw]", c[2].Data)
 }
+
+func TestHeuristicsSplit1(t *testing.T) {
+	s := logptn.NewSplitter()
+	c := s.Split("xx hoge<hoge@example.com>")
+	assert.Equal(t, 6, len(c))
+	assert.Equal(t, "hoge@example.com", c[4].Data)
+}
+
+func TestHeuristicsSplit2(t *testing.T) {
+	s := logptn.NewSplitter()
+	c := s.Split("2018-05-05 12:23:34 Yes")
+	assert.Equal(t, 5, len(c))
+	assert.Equal(t, "12:23:34", c[2].Data)
+}
+
+func TestHeuristicsSplit3(t *testing.T) {
+	s := logptn.NewSplitter()
+	c := s.Split("2018-05-05T12:23:34 Yes")
+	assert.Equal(t, 3, len(c))
+	assert.Equal(t, "Yes", c[2].Data)
+}
