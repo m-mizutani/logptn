@@ -5,32 +5,87 @@ import (
 )
 
 // Segment is a part of format
-type Segment struct {
-	Text   string         `json:"text"`
-	Values map[string]int `json:"values"`
-	Fixed  bool           `json:"fixed"`
+type Segment interface {
+	text() string
+	fixed() bool
+	count() int
+	merge(s string) bool
 }
 
-func newSegment(text string) *Segment {
-	s := Segment{Text: text, Values: map[string]int{}, Fixed: true}
-	return &s
+// fixed part
+type fixture struct {
+	Text  string `json:"text"`
+	total int
+}
+
+func (x *fixture) text() string {
+	return x.Text
+}
+
+func (x *fixture) fixed() bool {
+	return true
+}
+
+func (x *fixture) count() int {
+	return x.total
+}
+
+func (x *fixture) merge(s string) bool {
+	if x.Text != s {
+		return false
+	}
+
+	x.total++
+	return true
+}
+
+func newFixture(text string) *fixture {
+	return &fixture{Text: text}
+}
+
+// variable part
+type variable struct {
+	Values map[string]int `json:"values"`
+}
+
+func (x *variable) text() string {
+	return "*"
+}
+
+func (x *variable) fixed() bool {
+	return false
+}
+
+func (x *variable) count() int {
+	total := 0
+	for _, c := range x.Values {
+		total += c
+	}
+	return total
+}
+
+func (x *variable) merge(s string) bool {
+	x.Values[s]++
+	return true
+}
+
+func newVariable(f Segment) *variable {
+	v := &variable{Values: map[string]int{}}
+	v.Values[f.text()] = f.count()
+	return v
 }
 
 // Format is a structure of log format.
 type Format struct {
-	Segments []*Segment `json:"segments"`
-	Count    int        `json:"count"`
-	Sample   string     `json:"sample"`
+	Segments []Segment `json:"segments"`
+	Count    int       `json:"count"`
+	Sample   string    `json:"sample"`
 }
 
 func (x Format) String() string {
 	var str string
 	for _, s := range x.Segments {
-		if s.Fixed {
-			str += s.Text
-		} else {
-			str += "*"
-		}
+		str += s.text()
 	}
 
 	return str
@@ -51,10 +106,10 @@ func GenFormat(cluster Cluster) *Format {
 
 func newFormat(chunks []*Chunk) *Format {
 	f := Format{}
-	f.Segments = make([]*Segment, len(chunks))
+	f.Segments = make([]Segment, len(chunks))
 
 	for idx, c := range chunks {
-		f.Segments[idx] = newSegment(c.Data)
+		f.Segments[idx] = newFixture(c.Data)
 	}
 
 	return &f
@@ -63,10 +118,9 @@ func newFormat(chunks []*Chunk) *Format {
 func (x *Format) merge(chunks []*Chunk) {
 	x.Count++
 	for idx, c := range chunks {
-		if x.Segments[idx].Fixed && x.Segments[idx].Text != c.Data {
-			x.Segments[idx].Fixed = false
+		if !x.Segments[idx].merge(c.Data) {
+			x.Segments[idx] = newVariable(x.Segments[idx])
+			x.Segments[idx].merge(c.Data)
 		}
-
-		x.Segments[idx].Values[c.Data]++
 	}
 }
