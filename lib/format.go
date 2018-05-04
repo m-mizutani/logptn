@@ -8,7 +8,7 @@ import (
 type Segment struct {
 	Text   string         `json:"text"`
 	Values map[string]int `json:"values"`
-	Fixed  bool
+	Fixed  bool           `json:"fixed"`
 }
 
 func newSegment(text string) *Segment {
