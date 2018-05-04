@@ -19,7 +19,8 @@ func newSegment(text string) *Segment {
 // Format is a structure of log format.
 type Format struct {
 	Segments []*Segment `json:"segments"`
-	Count    int
+	Count    int        `json:"count"`
+	Sample   string     `json:"sample"`
 }
 
 func (x Format) String() string {
@@ -42,6 +43,8 @@ func GenFormat(cluster *Cluster) *Format {
 	for _, log := range cluster.logs {
 		format.merge(log.Chunk)
 	}
+
+	format.Sample = format.String()
 
 	return format
 }

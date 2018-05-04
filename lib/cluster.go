@@ -27,6 +27,8 @@ func CalcDistance(a, b *Log) float64 {
 func AppendNewCluster(clusters []*Cluster, log *Log) []*Cluster {
 	cluster := Cluster{}
 	cluster.Base = log
+	cluster.logs = append(cluster.logs, log)
+
 	// logging.Println("new cluster: ", log)
 	clusters = append(clusters, &cluster)
 	return clusters
@@ -34,7 +36,7 @@ func AppendNewCluster(clusters []*Cluster, log *Log) []*Cluster {
 
 func Clustering(logs []*Log) []*Cluster {
 	var clusters []*Cluster
-	THREATHOLD := 0.8
+	THREATHOLD := 0.65
 
 	for _, log := range logs {
 		if len(clusters) == 0 {
