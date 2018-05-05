@@ -8,33 +8,33 @@ import (
 	"strings"
 )
 
-type Generator struct {
+type Pattern struct {
 	logs     []*Log
 	formats  []*Format
 	splitter Splitter
 	builder  ClusterBuilder
 }
 
-// Constructor of Generator
-func NewGenerator() *Generator {
-	g := Generator{}
+// Constructor of Pattern
+func NewPattern() *Pattern {
+	g := Pattern{}
 	g.splitter = NewSplitter()
 	g.builder = NewSimpleClusterBuilder()
 	return &g
 }
 
-// Replace splitter of Generator
-func (x *Generator) ReplaceSplitter(sp Splitter) {
+// Replace splitter of Pattern
+func (x *Pattern) ReplaceSplitter(sp Splitter) {
 	x.splitter = sp
 }
 
-// Replace ClusterBuilder of Generator
-func (x *Generator) ReplaceClusterBuilder(builder ClusterBuilder) {
+// Replace ClusterBuilder of Pattern
+func (x *Pattern) ReplaceClusterBuilder(builder ClusterBuilder) {
 	x.builder = builder
 }
 
 // Read lines from log file (not only raw text but also gzip)
-func (x *Generator) ReadFile(fpath string) error {
+func (x *Pattern) ReadFile(fpath string) error {
 	fp, err := os.Open(fpath)
 	if err != nil {
 		return err
@@ -57,7 +57,7 @@ func (x *Generator) ReadFile(fpath string) error {
 }
 
 // Read lines from io.Reader
-func (x *Generator) ReadIO(fp io.Reader) error {
+func (x *Pattern) ReadIO(fp io.Reader) error {
 	s := bufio.NewScanner(fp)
 	for s.Scan() {
 		text := s.Text()
@@ -71,14 +71,14 @@ func (x *Generator) ReadIO(fp io.Reader) error {
 }
 
 // Read a line from argument.
-func (x *Generator) ReadLine(msg string) error {
+func (x *Pattern) ReadLine(msg string) error {
 	log := newLog(msg, x.splitter)
 	x.logs = append(x.logs, log)
 	return nil
 }
 
 // Finalize and build format(s).
-func (x *Generator) Finalize() {
+func (x *Pattern) Finalize() {
 	clusters := x.builder.Clustering(x.logs)
 	for _, cluster := range clusters {
 		format := GenFormat(cluster)
@@ -87,11 +87,11 @@ func (x *Generator) Finalize() {
 }
 
 // Getter of formats
-func (x *Generator) Formats() []*Format {
+func (x *Pattern) Formats() []*Format {
 	return x.formats
 }
 
 // Getter of logs
-func (x *Generator) Logs() []*Log {
+func (x *Pattern) Logs() []*Log {
 	return x.logs
 }

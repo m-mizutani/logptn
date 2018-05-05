@@ -7,7 +7,7 @@ import (
 )
 
 func TestReadFile(t *testing.T) {
-	g := logptn.NewGenerator()
+	g := logptn.NewPattern()
 	err := g.ReadFile("../test_data/t001.log")
 	assert.Nil(t, err)
 	logs := g.Logs()
@@ -17,7 +17,7 @@ func TestReadFile(t *testing.T) {
 }
 
 func TestReadFileWithMultipleNL(t *testing.T) {
-	g := logptn.NewGenerator()
+	g := logptn.NewPattern()
 	err := g.ReadFile("../test_data/t002.log")
 	assert.Nil(t, err)
 	logs := g.Logs()
@@ -26,7 +26,7 @@ func TestReadFileWithMultipleNL(t *testing.T) {
 }
 
 func TestFinalize(t *testing.T) {
-	g := logptn.NewGenerator()
+	g := logptn.NewPattern()
 	err := g.ReadFile("../test_data/t001.log")
 	assert.Nil(t, err)
 	g.Finalize()

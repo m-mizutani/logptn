@@ -1,16 +1,16 @@
-package logptn
+package dumper
 
 import (
+	logptn "github.com/m-mizutani/logptn/lib"
 	"log"
 	"os"
 )
 
 // Dump logs and format
 type Dumper interface {
-	Setup(arg string) error
-	DumpFormat(formats []*Format) error
-	DumpLog(logs []*Log, formats []*Format) error
-	Teardown() error
+	DumpFormat(formats []*logptn.Format) error
+	DumpLog(logs []*logptn.Log) error
+	Shutdown() error
 }
 
 type fileDumper struct {
@@ -18,7 +18,7 @@ type fileDumper struct {
 	shouldClose bool
 }
 
-func (x *fileDumper) Setup(arg string) error {
+func (x *fileDumper) open(arg string) error {
 	x.shouldClose = false
 	if arg == "-" {
 		x.out = os.Stdout
@@ -35,10 +35,14 @@ func (x *fileDumper) Setup(arg string) error {
 	return nil
 }
 
-func (x *fileDumper) Teardown(arg string) error {
+func (x *fileDumper) close() error {
 	if x.shouldClose {
 		return x.out.Close()
 	}
 
 	return nil
+}
+
+func (x *fileDumper) Shutdown() error {
+	return x.close()
 }

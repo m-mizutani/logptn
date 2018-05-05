@@ -3,6 +3,7 @@ package main
 import (
 	"github.com/jessevdk/go-flags"
 	logptn "github.com/m-mizutani/logptn/lib"
+	dump "github.com/m-mizutani/logptn/lib/dumper"
 	"log"
 	"os"
 )
@@ -10,9 +11,10 @@ import (
 type options struct {
 	// MaxLen uint   `long:"maxlen" description:"Max length of log message"`
 	Output     string  `short:"o" long:"output" description:"Output file, '-' means stdout" default:"-"`
-	OutFormat  string  `short:"f" long:"format" choice:"text" choice:"json" default:"text"`
+	Dumper     string  `short:"d" long:"dumper" choice:"text" choice:"json" default:"text"`
 	Threshold  float64 `short:"t" long:"threshold" default:"0.7"`
-	Delimiters string  `short:"d" long:"delimiters"`
+	Delimiters string  `short:"s" long:"delimiters"`
+
 	// FileName string `short:"i" description:"A log file" value-name:"FILE"`
 }
 
@@ -25,33 +27,37 @@ func main() {
 	}
 
 	// Setup Writer
-	var writer logptn.Writer
-	switch opts.OutFormat {
+	var dumper dump.Dumper
+	var dumperErr error
+	switch opts.Dumper {
 	case "text":
-		writer = &logptn.TextWriter{}
+		dumper, dumperErr = dump.NewTextDumper(opts.Output)
 	case "json":
-		writer = &logptn.JsonWriter{}
+		dumper, dumperErr = dump.NewJsonDumper(opts.Output)
+	default:
+		panic("No such dumper: " + opts.Dumper)
 	}
 
-	if werr := writer.Open(opts.Output); werr != nil {
-		log.Fatal("File open error: ", werr)
+	if dumperErr != nil {
+		log.Fatal("File open error: ", dumperErr)
 		os.Exit(1)
 	}
 
-	gen := logptn.NewGenerator()
+	// Creating pattern generator.
+	ptn := logptn.NewPattern()
 
 	// Setup Splitter
 	if opts.Delimiters != "" {
 		sp := logptn.NewSimpleSplitter()
 		sp.SetDelim(opts.Delimiters)
-		gen.ReplaceSplitter(sp)
+		ptn.ReplaceSplitter(sp)
 	}
 
 	// Setup ClusterBuilder
 	if opts.Threshold > 0 {
 		builder := logptn.NewSimpleClusterBuilder()
 		builder.SetThreshold(opts.Threshold)
-		gen.ReplaceClusterBuilder(builder)
+		ptn.ReplaceClusterBuilder(builder)
 	}
 
 	for _, arg := range args[1:] {
@@ -59,9 +65,9 @@ func main() {
 		var err error
 
 		if arg != "-" {
-			err = gen.ReadFile(arg)
+			err = ptn.ReadFile(arg)
 		} else {
-			err = gen.ReadIO(os.Stdin)
+			err = ptn.ReadIO(os.Stdin)
 		}
 
 		if err != nil {
@@ -70,7 +76,6 @@ func main() {
 		}
 	}
 
-	gen.Finalize()
-
-	writer.Dump(gen.Formats())
+	ptn.Finalize()
+	dumper.DumpFormat(ptn.Formats())
 }
