@@ -41,16 +41,19 @@ func (x *Generator) ReadFile(fpath string) error {
 	}
 	defer fp.Close()
 
+	var fio io.Reader
 	if strings.HasSuffix(fpath, ".gz") {
 		zr, zerr := gzip.NewReader(fp)
 		if zerr != nil {
 			return zerr
 		}
 		defer zr.Close()
-		return x.ReadIO(zr)
+		fio = zr
 	} else {
-		return x.ReadIO(fp)
+		fio = fp
 	}
+
+	return x.ReadIO(fio)
 }
 
 // Read lines from io.Reader
@@ -59,7 +62,9 @@ func (x *Generator) ReadIO(fp io.Reader) error {
 	for s.Scan() {
 		text := s.Text()
 		if len(text) > 0 {
-			x.ReadLine(s.Text())
+			if err := x.ReadLine(s.Text()); err != nil {
+				return err
+			}
 		}
 	}
 	return nil
@@ -67,7 +72,7 @@ func (x *Generator) ReadIO(fp io.Reader) error {
 
 // Read a line from argument.
 func (x *Generator) ReadLine(msg string) error {
-	log := NewLog(msg, x.splitter)
+	log := newLog(msg, x.splitter)
 	x.logs = append(x.logs, log)
 	return nil
 }

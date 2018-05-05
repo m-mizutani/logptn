@@ -6,18 +6,19 @@ type Chunk struct {
 }
 
 type Log struct {
-	text  string
-	Chunk []*Chunk
+	text   string
+	Chunk  []*Chunk
+	format *Format
 }
 
-func NewLog(line string, sp Splitter) *Log {
+func newLog(line string, sp Splitter) *Log {
 	log := Log{}
 	log.text = line
 	log.Chunk = sp.Split(line)
 	return &log
 }
 
-func NewChunk(d string) *Chunk {
+func newChunk(d string) *Chunk {
 	c := Chunk{}
 	c.Data = d
 	c.Freeze = false
@@ -25,7 +26,7 @@ func NewChunk(d string) *Chunk {
 }
 
 func (x *Chunk) Clone() *Chunk {
-	c := NewChunk(x.Data)
+	c := newChunk(x.Data)
 	c.Freeze = x.Freeze
 	return c
 }

@@ -25,15 +25,20 @@ func NewSimpleSplitter() *SimpleSplitter {
 	s := &SimpleSplitter{}
 	s.delims = " \t!,:;[]{}()<>=|\\*\"'"
 	heuristicsPatterns := []string{
-		`\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d+`,                           // DateTime
-		`\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z`,                              // DateTime
-		`\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}`,                               // DateTime
-		`\d{4}/\d{2}/\d{2}`,                                                 // Date
-		`\d{4}-\d{2}-\d{2}`,                                                 // Date
-		`\d{2}:\d{2}:\d{2}.\d+`,                                             // Time
-		`\d{2}:\d{2}:\d{2}`,                                                 // Time
-		`[a-zA-Z0-9.!#$%&'*+/=?^_{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*`, // Mail address
-		`(\d{1,3}\.){3}\d{1,3}`,                                             // IPv4 address
+		// DateTime
+		`\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d+`,
+		`\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z`,
+		`\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}`,
+		// Date
+		`\d{4}/\d{2}/\d{2}`,
+		`\d{4}-\d{2}-\d{2}`,
+		`\d{2}:\d{2}:\d{2}.\d+`,
+		// Time
+		`\d{2}:\d{2}:\d{2}`,
+		// Mail address
+		`[a-zA-Z0-9.!#$%&'*+/=?^_{|}~-]+@[a-zA-Z0-9-]+(?:\.[a-zA-Z0-9-]+)*`,
+		// IPv4 address
+		`(\d{1,3}\.){3}\d{1,3}`,
 	}
 
 	s.regexList = make([]*regexp.Regexp, len(heuristicsPatterns))
@@ -55,12 +60,12 @@ func (x *SimpleSplitter) splitByRegex(chunk *Chunk) []*Chunk {
 			pos := 0
 			chunks := make([]*Chunk, len(result)*2+1)
 			for idx, m := range result {
-				chunks[idx*2] = NewChunk(chunk.Data[pos:m[0]])
-				chunks[idx*2+1] = NewChunk(chunk.Data[m[0]:m[1]])
+				chunks[idx*2] = newChunk(chunk.Data[pos:m[0]])
+				chunks[idx*2+1] = newChunk(chunk.Data[m[0]:m[1]])
 				chunks[idx*2+1].Freeze = true
 				pos = m[1]
 			}
-			chunks[len(chunks)-1] = NewChunk(chunk.Data[pos:])
+			chunks[len(chunks)-1] = newChunk(chunk.Data[pos:])
 			return chunks
 		}
 	}
@@ -75,7 +80,7 @@ func (x *SimpleSplitter) splitByDelimiter(chunk *Chunk) []*Chunk {
 		idx := strings.IndexAny(msg, x.delims)
 		if idx < 0 {
 			if len(msg) > 0 {
-				res = append(res, NewChunk(msg))
+				res = append(res, newChunk(msg))
 			}
 			break
 		}
@@ -89,12 +94,12 @@ func (x *SimpleSplitter) splitByDelimiter(chunk *Chunk) []*Chunk {
 
 		if len(s1) > 0 {
 			// log.Print("add s1: ", s1)
-			res = append(res, NewChunk(s1))
+			res = append(res, newChunk(s1))
 		}
 
 		if len(s2) > 0 {
 			// log.Print("add s2: ", s2)
-			res = append(res, NewChunk(s2))
+			res = append(res, newChunk(s2))
 		}
 
 		msg = s3
@@ -106,7 +111,7 @@ func (x *SimpleSplitter) splitByDelimiter(chunk *Chunk) []*Chunk {
 
 // Split is a function to split log message.
 func (x *SimpleSplitter) Split(msg string) []*Chunk {
-	chunk := NewChunk(msg)
+	chunk := newChunk(msg)
 	prevLen := 0
 	chunks := []*Chunk{chunk}
 
