@@ -6,32 +6,32 @@ import (
 
 // Segment is a part of format
 type Segment interface {
-	text() string
-	fixed() bool
-	count() int
+	Text() string
+	Fixed() bool
+	Count() int
 	merge(s string) bool
 }
 
 // fixed part
 type fixture struct {
-	Text  string `json:"text"`
+	Data  string `json:"text"`
 	total int
 }
 
-func (x *fixture) text() string {
-	return x.Text
+func (x *fixture) Text() string {
+	return x.Data
 }
 
-func (x *fixture) fixed() bool {
+func (x *fixture) Fixed() bool {
 	return true
 }
 
-func (x *fixture) count() int {
+func (x *fixture) Count() int {
 	return x.total
 }
 
 func (x *fixture) merge(s string) bool {
-	if x.Text != s {
+	if x.Data != s {
 		return false
 	}
 
@@ -40,7 +40,7 @@ func (x *fixture) merge(s string) bool {
 }
 
 func newFixture(text string) *fixture {
-	return &fixture{Text: text}
+	return &fixture{Data: text}
 }
 
 // variable part
@@ -48,15 +48,15 @@ type variable struct {
 	Values map[string]int `json:"values"`
 }
 
-func (x *variable) text() string {
+func (x *variable) Text() string {
 	return "*"
 }
 
-func (x *variable) fixed() bool {
+func (x *variable) Fixed() bool {
 	return false
 }
 
-func (x *variable) count() int {
+func (x *variable) Count() int {
 	total := 0
 	for _, c := range x.Values {
 		total += c
@@ -71,7 +71,7 @@ func (x *variable) merge(s string) bool {
 
 func newVariable(f Segment) *variable {
 	v := &variable{Values: map[string]int{}}
-	v.Values[f.text()] = f.count()
+	v.Values[f.Text()] = f.Count()
 	return v
 }
 
@@ -85,7 +85,7 @@ type Format struct {
 func (x Format) String() string {
 	var str string
 	for _, s := range x.Segments {
-		str += s.text()
+		str += s.Text()
 	}
 
 	return str

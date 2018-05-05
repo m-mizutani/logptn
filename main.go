@@ -11,7 +11,7 @@ import (
 type options struct {
 	// MaxLen uint   `long:"maxlen" description:"Max length of log message"`
 	Output     string  `short:"o" long:"output" description:"Output file, '-' means stdout" default:"-"`
-	Dumper     string  `short:"d" long:"dumper" choice:"text" choice:"json" default:"text"`
+	Dumper     string  `short:"d" long:"dumper" choice:"text" choice:"json" choice:"sjson" default:"text"`
 	Threshold  float64 `short:"t" long:"threshold" default:"0.7"`
 	Delimiters string  `short:"s" long:"delimiters"`
 
@@ -34,6 +34,8 @@ func main() {
 		dumper, dumperErr = dump.NewTextDumper(opts.Output)
 	case "json":
 		dumper, dumperErr = dump.NewJsonDumper(opts.Output)
+	case "sjson":
+		dumper, dumperErr = dump.NewSimpleJsonDumper(opts.Output)
 	default:
 		panic("No such dumper: " + opts.Dumper)
 	}
