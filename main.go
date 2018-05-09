@@ -14,7 +14,7 @@ type options struct {
 	Dumper     string  `short:"d" long:"dumper" choice:"text" choice:"json" choice:"sjson" default:"text"`
 	Threshold  float64 `short:"t" long:"threshold" default:"0.7"`
 	Delimiters string  `short:"s" long:"delimiters"`
-
+	Content    string  `short:"c" long:"content" choice:"log" choice:"format" default:"format"`
 	// FileName string `short:"i" description:"A log file" value-name:"FILE"`
 }
 
@@ -79,5 +79,10 @@ func main() {
 	}
 
 	ptn.Finalize()
-	dumper.DumpFormat(ptn.Formats())
+	switch opts.Content {
+	case "log":
+		dumper.DumpLog(ptn.Logs())
+	case "format":
+		dumper.DumpFormat(ptn.Formats())
+	}
 }
