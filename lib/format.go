@@ -1,7 +1,10 @@
 package logptn
 
 import (
-// logging "log"
+	// logging "log"
+	"fmt"
+	"github.com/fatih/color"
+	"github.com/satori/go.uuid"
 )
 
 // Segment is a part of format
@@ -77,15 +80,23 @@ func newVariable(f Segment) *variable {
 
 // Format is a structure of log format.
 type Format struct {
+	uuid     string
 	Segments []Segment `json:"segments"`
 	Count    int       `json:"count"`
 	Sample   string    `json:"sample"`
 }
 
 func (x Format) String() string {
-	var str string
+	red := color.New(color.FgRed).SprintFunc()
+
+	str := fmt.Sprintf("%6d [%s] ", x.Count, x.id())
+
 	for _, s := range x.Segments {
-		str += s.Text()
+		if s.Fixed() {
+			str += s.Text()
+		} else {
+			str += red(s.Text())
+		}
 	}
 
 	return str
@@ -97,6 +108,7 @@ func GenFormat(cluster Cluster) *Format {
 
 	for _, log := range cluster.Logs() {
 		format.merge(log.Chunk)
+		log.format = format
 	}
 
 	format.Sample = format.String()
@@ -107,12 +119,17 @@ func GenFormat(cluster Cluster) *Format {
 func newFormat(chunks []*Chunk) *Format {
 	f := Format{}
 	f.Segments = make([]Segment, len(chunks))
+	f.uuid = uuid.NewV4().String()
 
 	for idx, c := range chunks {
 		f.Segments[idx] = newFixture(c.Data)
 	}
 
 	return &f
+}
+
+func (x *Format) id() string {
+	return x.uuid[:8]
 }
 
 func (x *Format) merge(chunks []*Chunk) {

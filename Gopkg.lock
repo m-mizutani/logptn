@@ -8,10 +8,28 @@
   version = "v1.1.0"
 
 [[projects]]
+  name = "github.com/fatih/color"
+  packages = ["."]
+  revision = "507f6050b8568533fb3f5504de8e5205fa62a114"
+  version = "v1.6.0"
+
+[[projects]]
   name = "github.com/jessevdk/go-flags"
   packages = ["."]
   revision = "c6ca198ec95c841fdb89fc0de7496fed11ab854e"
   version = "v1.4.0"
+
+[[projects]]
+  name = "github.com/mattn/go-colorable"
+  packages = ["."]
+  revision = "167de6bfdfba052fa6b2d3664c8f5272e23c9072"
+  version = "v0.0.9"
+
+[[projects]]
+  name = "github.com/mattn/go-isatty"
+  packages = ["."]
+  revision = "0360b2af4f38e8d38c7fce2a9f4e702702d73a39"
+  version = "v0.0.3"
 
 [[projects]]
   name = "github.com/pmezard/go-difflib"
@@ -20,14 +38,26 @@
   version = "v1.0.0"
 
 [[projects]]
+  name = "github.com/satori/go.uuid"
+  packages = ["."]
+  revision = "f58768cc1a7a7e77a3bd49e98cdd21419399b6a3"
+  version = "v1.2.0"
+
+[[projects]]
   name = "github.com/stretchr/testify"
   packages = ["assert"]
   revision = "12b6f73e6084dad08a7c6e575284b177ecafbc71"
   version = "v1.2.1"
 
+[[projects]]
+  branch = "master"
+  name = "golang.org/x/sys"
+  packages = ["unix"]
+  revision = "7db1c3b1a98089d0071c84f646ff5c96aad43682"
+
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "97d6b8892a6ef1b54f1d6f023edb507290b11cede4dd761ed10c0fe7928f9649"
+  inputs-digest = "430226b1dc3836234dbfd06c7843e3ee4871a6cccd65ee3bebc0deea38a5bd7d"
   solver-name = "gps-cdcl"
   solver-version = 1
