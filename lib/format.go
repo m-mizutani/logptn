@@ -4,7 +4,8 @@ import (
 	// logging "log"
 	"fmt"
 	"github.com/fatih/color"
-	"github.com/satori/go.uuid"
+	// "github.com/satori/go.uuid"
+	"crypto/sha256"
 )
 
 // Segment is a part of format
@@ -80,7 +81,7 @@ func newVariable(f Segment) *variable {
 
 // Format is a structure of log format.
 type Format struct {
-	uuid     string
+	Hash     string    `json:"id"`
 	Segments []Segment `json:"segments"`
 	Count    int       `json:"count"`
 	Sample   string    `json:"sample"`
@@ -89,7 +90,7 @@ type Format struct {
 func (x Format) String() string {
 	red := color.New(color.FgRed).SprintFunc()
 
-	str := fmt.Sprintf("%6d [%s] ", x.Count, x.id())
+	str := fmt.Sprintf("%6d [%s] ", x.Count, x.shortID())
 
 	for _, s := range x.Segments {
 		if s.Fixed() {
@@ -119,25 +120,43 @@ func GenFormat(cluster Cluster) *Format {
 func newFormat(chunks []*Chunk) *Format {
 	f := Format{}
 	f.Segments = make([]Segment, len(chunks))
-	f.uuid = uuid.NewV4().String()
 
 	for idx, c := range chunks {
 		f.Segments[idx] = newFixture(c.Data)
 	}
 
+	f.calcHash()
 	return &f
 }
 
+func (x *Format) shortID() string {
+	return x.Hash[:8]
+}
+
 func (x *Format) id() string {
-	return x.uuid[:8]
+	return x.Hash
+}
+
+func (x *Format) calcHash() {
+	h := sha256.New()
+	for _, seg := range x.Segments {
+		h.Write([]byte(seg.Text()))
+	}
+	x.Hash = fmt.Sprintf("%x", h.Sum(nil))
 }
 
 func (x *Format) merge(chunks []*Chunk) {
 	x.Count++
+	changed := false
 	for idx, c := range chunks {
 		if !x.Segments[idx].merge(c.Data) {
 			x.Segments[idx] = newVariable(x.Segments[idx])
 			x.Segments[idx].merge(c.Data)
+			changed = true
 		}
+	}
+
+	if changed {
+		x.calcHash()
 	}
 }

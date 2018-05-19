@@ -13,6 +13,7 @@ type Splitter interface {
 type SimpleSplitter struct {
 	delims    string
 	regexList []*regexp.Regexp
+	useRegex  bool
 }
 
 // NewSplitter is a wrapper of SimpleSplitter
@@ -24,6 +25,8 @@ func NewSplitter() Splitter {
 func NewSimpleSplitter() *SimpleSplitter {
 	s := &SimpleSplitter{}
 	s.delims = " \t!,:;[]{}()<>=|\\*\"'"
+	s.useRegex = true
+
 	heuristicsPatterns := []string{
 		// DateTime
 		`\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}.\d+`,
@@ -53,22 +56,30 @@ func (x *SimpleSplitter) SetDelim(d string) {
 	x.delims = d
 }
 
+// DisableRegex is disabler of heuristics patterns
+func (x *SimpleSplitter) DisableRegex() {
+	x.useRegex = false
+}
+
 func (x *SimpleSplitter) splitByRegex(chunk *Chunk) []*Chunk {
-	for _, regex := range x.regexList {
-		result := regex.FindAllStringIndex(chunk.Data, -1)
-		if len(result) > 0 {
-			pos := 0
-			chunks := make([]*Chunk, len(result)*2+1)
-			for idx, m := range result {
-				chunks[idx*2] = newChunk(chunk.Data[pos:m[0]])
-				chunks[idx*2+1] = newChunk(chunk.Data[m[0]:m[1]])
-				chunks[idx*2+1].Freeze = true
-				pos = m[1]
+	if x.useRegex {
+		for _, regex := range x.regexList {
+			result := regex.FindAllStringIndex(chunk.Data, -1)
+			if len(result) > 0 {
+				pos := 0
+				chunks := make([]*Chunk, len(result)*2+1)
+				for idx, m := range result {
+					chunks[idx*2] = newChunk(chunk.Data[pos:m[0]])
+					chunks[idx*2+1] = newChunk(chunk.Data[m[0]:m[1]])
+					chunks[idx*2+1].Freeze = true
+					pos = m[1]
+				}
+				chunks[len(chunks)-1] = newChunk(chunk.Data[pos:])
+				return chunks
 			}
-			chunks[len(chunks)-1] = newChunk(chunk.Data[pos:])
-			return chunks
 		}
 	}
+
 	res := []*Chunk{chunk}
 	return res
 }
