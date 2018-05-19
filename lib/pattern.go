@@ -13,6 +13,7 @@ type Pattern struct {
 	formats  []*Format
 	splitter Splitter
 	builder  ClusterBuilder
+	index    int
 }
 
 // Constructor of Pattern
@@ -72,7 +73,8 @@ func (x *Pattern) ReadIO(fp io.Reader) error {
 
 // Read a line from argument.
 func (x *Pattern) ReadLine(msg string) error {
-	log := newLog(msg, x.splitter)
+	log := newLog(msg, x.splitter, x.index)
+	x.index++
 	x.logs = append(x.logs, log)
 	return nil
 }

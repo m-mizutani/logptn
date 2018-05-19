@@ -11,7 +11,7 @@ import (
 type options struct {
 	// MaxLen uint   `long:"maxlen" description:"Max length of log message"`
 	Output       string  `short:"o" long:"output" description:"Output file, '-' means stdout" default:"-"`
-	Dumper       string  `short:"d" long:"dumper" choice:"text" choice:"json" choice:"sjson" default:"text"`
+	Dumper       string  `short:"d" long:"dumper" choice:"text" choice:"json" choice:"sjson" choice:"matrix" default:"text"`
 	Threshold    float64 `short:"t" long:"threshold" default:"0.7"`
 	Delimiters   string  `short:"s" long:"delimiters"`
 	Content      string  `short:"c" long:"content" choice:"log" choice:"format" default:"format"`
@@ -37,6 +37,8 @@ func main() {
 		dumper, dumperErr = dump.NewJsonDumper(opts.Output)
 	case "sjson":
 		dumper, dumperErr = dump.NewSimpleJsonDumper(opts.Output)
+	case "matrix":
+		dumper, dumperErr = dump.NewMatrixDumper(opts.Output)
 	default:
 		panic("No such dumper: " + opts.Dumper)
 	}
@@ -86,10 +88,15 @@ func main() {
 	}
 
 	ptn.Finalize()
+	var err error
 	switch opts.Content {
 	case "log":
-		dumper.DumpLog(ptn.Logs())
+		err = dumper.DumpLog(ptn.Logs())
 	case "format":
-		dumper.DumpFormat(ptn.Formats())
+		err = dumper.DumpFormat(ptn.Formats())
+	}
+
+	if err != nil {
+		log.Fatal("Dump error: ", err)
 	}
 }

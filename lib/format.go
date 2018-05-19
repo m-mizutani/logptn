@@ -85,6 +85,7 @@ type Format struct {
 	Segments []Segment `json:"segments"`
 	Count    int       `json:"count"`
 	Sample   string    `json:"sample"`
+	Cluster  Cluster
 }
 
 func (x Format) String() string {
@@ -106,6 +107,7 @@ func (x Format) String() string {
 // GenFormat generates a format from Cluster (set of logs)
 func GenFormat(cluster Cluster) *Format {
 	format := newFormat(cluster.Logs()[0].Chunk)
+	format.Cluster = cluster
 
 	for _, log := range cluster.Logs() {
 		format.merge(log.Chunk)

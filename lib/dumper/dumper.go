@@ -23,7 +23,7 @@ func (x *fileDumper) open(arg string) error {
 	if arg == "-" {
 		x.out = os.Stdout
 	} else {
-		fd, err := os.OpenFile(arg, os.O_RDWR|os.O_CREATE, 0755)
+		fd, err := os.Create(arg)
 		if err != nil {
 			log.Fatal("Can not open file: ", arg)
 			return err

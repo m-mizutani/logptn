@@ -11,15 +11,17 @@ type Chunk struct {
 }
 
 type Log struct {
+	Index  int
 	text   string
 	Chunk  []*Chunk
 	format *Format
 }
 
-func newLog(line string, sp Splitter) *Log {
+func newLog(line string, sp Splitter, idx int) *Log {
 	log := Log{}
 	log.text = line
 	log.Chunk = sp.Split(line)
+	log.Index = idx
 	return &log
 }
 
