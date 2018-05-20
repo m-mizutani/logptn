@@ -56,6 +56,11 @@ func (x *SimpleSplitter) SetDelim(d string) {
 	x.delims = d
 }
 
+// EnableRegex is disabler of heuristics patterns
+func (x *SimpleSplitter) EnableRegex() {
+	x.useRegex = true
+}
+
 // DisableRegex is disabler of heuristics patterns
 func (x *SimpleSplitter) DisableRegex() {
 	x.useRegex = false
