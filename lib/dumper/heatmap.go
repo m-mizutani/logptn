@@ -7,13 +7,13 @@ import (
 	// logger "log"
 )
 
-type MatrixDumper struct {
+type HeatmapDumper struct {
 	fileDumper
 }
 
-// NewMatrixDumper is Constructor of Matrixdumper
-func NewMatrixDumper(fpath string) (*MatrixDumper, error) {
-	dumper := MatrixDumper{}
+// NewHeatmapDumper is Constructor of Heatmapdumper
+func NewHeatmapDumper(fpath string) (*HeatmapDumper, error) {
+	dumper := HeatmapDumper{}
 	if err := dumper.open(fpath); err != nil {
 		return nil, err
 	}
@@ -103,7 +103,7 @@ func calcUnitSize(total, width int) int {
 }
 
 // DumpFormat
-func (x *MatrixDumper) DumpFormat(formats []*logptn.Format) error {
+func (x *HeatmapDumper) DumpFormat(formats []*logptn.Format) error {
 	const width = 20
 	mf := []*mtxFormat{}
 	total := 0
@@ -166,7 +166,7 @@ func (x *MatrixDumper) DumpFormat(formats []*logptn.Format) error {
 	return nil
 }
 
-func (x *MatrixDumper) DumpLog(logs []*logptn.Log) error {
+func (x *HeatmapDumper) DumpLog(logs []*logptn.Log) error {
 	for _, log := range logs {
 		fmt.Println(log)
 	}
