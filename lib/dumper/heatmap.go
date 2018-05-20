@@ -30,7 +30,7 @@ table { border-collapse: collapse; border-spacing: 0; }
 td { padding: 2px }
 thead td.sample { text-align: center; }
 thead td.cell {  -webkit-writing-mode: vertical-rl; -ms-writing-mode: tb-rl; writing-mode: vertical-rl; }
-td.sample { width: 840px; border: 1px solid #999; }
+td.sample { width: 840px; border: 1px solid #999; word-wrap: break-word; }
 td.cell { width: 24px; font-size: 12px; text-align: center; border: 1px solid #aaa; }
 td.total { text-align: right; border: 1px solid #999; padding: 4px; }
 span.var { color: #D04255 }
