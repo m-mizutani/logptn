@@ -27,21 +27,32 @@ func htmlTemplate() string {
   <style type="text/css"><!--
 * { font-family: 'Helvetica Neue', sans-serif; font-size: 14px; }
 table { border-collapse: collapse; border-spacing: 0; }
-td.sample { width: 840px }
-td.cell { width: 24px; font-size: 12px; text-align: center; border: 1px solid #999; }
+td { padding: 2px }
+thead td.sample { text-align: center; }
+thead td.cell {  -webkit-writing-mode: vertical-rl; -ms-writing-mode: tb-rl; writing-mode: vertical-rl; }
+td.sample { width: 840px; border: 1px solid #999; }
+td.cell { width: 24px; font-size: 12px; text-align: center; border: 1px solid #aaa; }
+td.total { text-align: right; border: 1px solid #999; padding: 4px; }
 span.var { color: #D04255 }
   --></style>  
 </head>
 <body>
 <table>
+<thead>
+<tr>
+<td class="sample">Log formats</td>
+{{range .IndexList}}<td class="cell">{{.}}</td>{{end}}
+<td class="total">Total</td>
+</tr>
+</thead>
 <tbody>
-{{range .}}
+{{range .Formats}}
   <tr>
   <td class="sample">{{range .Segments}}
     {{if .IsVar}}<span class="var">*</span>{{else}}<span>{{.Word | html}}{{end}}</span>
   {{end}}</td>
   {{range .Cells}}<td class="cell">{{if .Has }}{{.Count}}{{end}}</td>{{end}}
-  <td>{{.Total}}</td>
+  <td class="total">{{.Total}}</td>
   </tr>
 {{end}}
 </tbody>
@@ -68,6 +79,11 @@ type mtxFormat struct {
 	Cells    []mtxCell
 	Total    int
 	original *logptn.Format
+}
+
+type mtxRenderData struct {
+	Formats   []*mtxFormat
+	IndexList []string
 }
 
 func calcUnitSize(total, width int) int {
@@ -121,6 +137,12 @@ func (x *MatrixDumper) DumpFormat(formats []*logptn.Format) error {
 	actualWidth := (total / unitSize) + 1
 	// logger.Println("actWidth =", actualWidth)
 
+	renderData := mtxRenderData{}
+	for i := 0; i < total; i = i + unitSize {
+		renderData.IndexList = append(renderData.IndexList,
+			fmt.Sprintf("%d - %d", i+1, i+unitSize))
+	}
+
 	for _, f := range mf {
 		f.Cells = make([]mtxCell, actualWidth)
 		f.Total = len(f.original.Cluster.Logs())
@@ -136,7 +158,8 @@ func (x *MatrixDumper) DumpFormat(formats []*logptn.Format) error {
 		return err
 	}
 
-	err = t.Execute(x.out, mf)
+	renderData.Formats = mf
+	err = t.Execute(x.out, renderData)
 	if err != nil {
 		return err
 	}
