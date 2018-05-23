@@ -10,7 +10,7 @@ $ go get github.com/m-mizutani/logptn
 ## Usage
 
 ```
-$ logptn <log file>
+$ logptn <log file1> [log file2 ...]
 ```
 
 Example:
@@ -32,6 +32,13 @@ Usage:
   logptn [OPTIONS]
 
 Application Options:
-  -o, --output= Output file, '-' means stdout (default: -)
-  -f, --format=[text|json]
+  -o, --output=                          Output file, '-' means stdout (default: -)
+  -d, --dumper=[text|json|sjson|heatmap]
+  -t, --threshold=
+  -s, --delimiters=
+  -c, --content=[log|format]
+      --enable-regex
+
+Help Options:
+  -h, --help                             Show this help message
 ```
