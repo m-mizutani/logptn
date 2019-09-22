@@ -49,6 +49,10 @@ func (x *simpleClusterBuilder) SetThreshold(threshold float64) {
 	x.threshold = threshold
 }
 
+func (x *simpleClusterbuilder) Threshold float64 {
+	return x.threshold
+}
+
 func (x *simpleClusterBuilder) Clustering(logs []*Log) []Cluster {
 	calcDistance := func(a, b *Log) float64 {
 		if len(a.Chunk) != len(b.Chunk) {
@@ -65,8 +69,6 @@ func (x *simpleClusterBuilder) Clustering(logs []*Log) []Cluster {
 		return float64(matched) / float64(len(a.Chunk))
 	}
 
-	THREATHOLD := 0.65
-
 	for _, log := range logs {
 		if len(x.clusters) == 0 {
 			x.appendCluster(log)
@@ -82,7 +84,7 @@ func (x *simpleClusterBuilder) Clustering(logs []*Log) []Cluster {
 				}
 			}
 
-			if max < THREATHOLD {
+			if max < x.Threshold {
 				x.appendCluster(log)
 			} else {
 				// logging.Println("merged")
